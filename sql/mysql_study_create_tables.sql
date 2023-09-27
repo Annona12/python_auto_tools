@@ -87,3 +87,108 @@ alter table orderitems add constraint fk_orderitem_orders foreign key (order_num
 alter table orderitems add constraint fk_orderitem_products foreign key (prod_id) references products(prod_id);
 alter table orders add constraint fk_orders_customers foreign key(cust_id) references customers (cust_id);
 alter table products add constraint fk_products_vendors foreign key(vend_id) references vendors (vend_id);
+
+# 创建视图：已订购了任意产品的所有客户的列表
+create view productcustomers as
+    select customers.cust_id,cust_contact,prod_id
+    from customers,orders,orderitems
+    where customers.cust_id=orders.cust_id and orderitems.order_num=orders.order_num ;
+
+# 创建输出特定格式的视图
+create view vendorlocate as
+    select concat(trim(vend_name),'(',trim(vend_country),')') as vend_title
+    from vendors;
+
+# 创建一个邮件信息不为空的视图
+create view customersemail as
+    select cust_id,cust_name,cust_email
+    from customers
+    where cust_email is not null;
+
+# 创建存储过程:返回产品平均价格的存储过程
+create procedure productavgprice()
+begin
+    select avg(prod_price) as avg_price from products;
+end;
+
+# 创建存储过程:返回产品平均价格的存储过程进阶版
+create procedure productavgprice1(
+     OUT low_price decimal(8,2),
+     OUT high_price decimal(8,2),
+     OUT agv_price decimal(8,2)
+)
+begin
+    select min(prod_price)into low_price from products;
+    select max(prod_price)into high_price from products;
+    select avg(prod_price) from products into agv_price;
+end;
+
+# 创建包含IN和OUT参数的存储过程
+create procedure ordertotal(
+    IN onumber int,
+    OUT ototal decimal(8,2)
+)
+begin
+    select sum(quantity*item_price)
+    from orderitems
+    where order_num=onumber into ototal;
+end;
+
+# 更加智能的存储过程
+create procedure ordertotal1 (
+    IN onumber int,
+    IN taxable boolean,
+    OUT ototal decimal(8,2)
+)comment 'Obtain order total,optionally adding tax'
+begin
+    declare total decimal(8,2);
+    declare taxrate int default 6;
+    select sum(item_price*quantity) from orderitems where order_num=onumber into total;
+
+    if taxable then
+        select total+(total/100*taxrate) into total;
+    end if;
+    select total into ototal;
+end;
+
+# 创建游标
+create procedure cursortest()
+begin
+    declare ordernumbers cursor for
+    select order_num from orders;
+end;
+
+# 创建游标进阶
+create procedure cursortes01()
+begin
+    declare o int;
+    declare ordernumbers cursor for
+    select order_num from orders;
+    open ordernumbers;
+    fetch ordernumbers into o;
+    close ordernumbers;
+end;
+
+# drop procedure cursortest002;
+# 创建游标终极版本
+create procedure cursortest002()
+begin
+    declare done boolean default 0;
+    declare o int;
+    declare t decimal(8,2);
+
+    declare orderunmbers1 cursor for
+        select order_num from orders;
+    declare continue handler for sqlstate '02000' set done=1;
+    create table if not exists ordertotals(
+        order_num int comment '订单编号',
+        total decimal(8,2) comment '总金额'
+    );
+    open orderunmbers1;
+    repeat
+        fetch orderunmbers1 into o;
+        call ordertotal1(o,1,t);
+        insert into ordertotals (order_num, total) values (o,t);
+        until  done end repeat;
+        close orderunmbers1;
+end;

@@ -39,3 +39,30 @@ select avg( prod_price)from products ;
 select avg(distinct prod_price)from products ;
 
 select sum(quantity) as total_quantity from orderitems;
+select *from customers,orders,orderitems where customers.cust_id=orders.cust_id and orderitems.order_num=orders.order_num and prod_id='TNT2';
+
+select *from productcustomers where prod_id='TNT2';
+
+select *from vendorlocate;
+
+select *from customersemail;
+
+select avg(prod_price) as avg_price from products;
+call productavgprice();
+
+call productavgprice1(@lowp,@highp,@avgp);
+select @lowp;
+
+call ordertotal(20005,@total);
+select @total;
+call ordertotal1(20005,0,@total);
+select @total;
+
+call ordertotal1(20005,1,@total);
+
+select @total;
+show create procedure ordertotal1;
+
+select *from orders;
+select *from ordertotals;
+call cursortest002();
