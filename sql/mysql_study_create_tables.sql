@@ -52,6 +52,13 @@ create table if not exists orders(
   cust_id    int      not null comment '订单顾客 ID （关系到customers表的cust_id）',
   primary key(order_num)
 ) ENGINE=InnoDB COMMENT='订单表';
+# orders备份表
+create table if not exists archive_orders(
+  order_num  int      not null AUTO_INCREMENT comment '订单号',
+  order_date datetime not null comment '订单日期',
+  cust_id    int      not null comment '订单顾客 ID （关系到customers表的cust_id）',
+  primary key(order_num)
+) ENGINE=InnoDB COMMENT='订单备份表';
 ########################################################################
 #订单表：orderitems表
 #orderitems表存储每个订单中的实际物品，每个订单的每个物品占一行。对orders中的每一行，orderitems中有一行或多行。
@@ -192,3 +199,51 @@ begin
         until  done end repeat;
         close orderunmbers1;
 end;
+
+# 创建触发器
+create trigger newproducts after insert on products
+    for each row select 'product added' into @test;
+
+# drop trigger deleteorder;
+create trigger neworders after insert on orders
+    for each row select new.order_num into @testorder;
+
+# 创建一个DELETE触发器:使用OLD保存将要被删除的行到一个存档表中
+create trigger deleteorder before delete on orders
+    for each row
+    begin
+        insert into archive_orders(order_num, order_date, cust_id) values(OLD.order_num,OLD.order_date,OLD.cust_id);
+    end;
+
+# 例子保证州名缩写总是大写
+create trigger updatevendors before update on vendors
+    for each row select new.vend_state=upper(new.vend_state) into @updatetest;
+
+# 创建表时设置字符集和校对
+create table mytable(
+    column1 int,
+    column2 varchar(10)
+)default character set hebrew
+collate hebrew_general_ci;
+# 创建表时设置字符集和校对
+create table mytable(
+    column1 int,
+    column2 varchar(10) character set hebrew collate hebrew_general_ci
+);
+
+# 创建用户
+create user Annona_test identified by '123456';
+# 授权给用户
+GRANT select ON auto_test_database.* TO Annona;
+show grants for Annona;
+
+# 设置可以远程连接新建的用户
+grant all privileges on *.* to 'Annona'@'%' with grant option;
+flush privileges;
+
+revoke select on auto_test_database.* from Annona;
+grant select,insert on auto_test_database.* TO Annona;
+
+set password for Annona = password ('12345678');
+
+set password=password ('12345678');

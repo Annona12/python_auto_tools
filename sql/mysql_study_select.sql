@@ -66,3 +66,37 @@ show create procedure ordertotal1;
 select *from orders;
 select *from ordertotals;
 call cursortest002();
+select  *from vendors;
+select *from products;
+select @test;
+# INSERT INTO orders(order_date, cust_id)VALUES( NOW(), 10004);
+select @testorder;
+select *from orders where order_num='20005';
+select *from orderitems where order_num='20005';
+select *from archive_orders;
+# delete from orders where order_num='20012';
+
+# 事务
+select *from ordertotals;
+start transaction ;
+delete from ordertotals;
+select *from ordertotals;
+rollback ;
+select *from ordertotals;
+
+start transaction ;
+delete from orderitems where order_num='20005';
+savepoint delete1;
+delete from orders where order_num='20005';
+rollback to delete1;
+commit ;
+select @@autocommit;
+
+show character set ;
+show collation ;
+
+select *from customers order by cust_name collate latin1_general_cs;
+
+select *from user;
+# rename user Annona_test to Annona;
+show grants for Annona;
