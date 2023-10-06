@@ -226,19 +226,19 @@ create table mytable(
 )default character set hebrew
 collate hebrew_general_ci;
 # 创建表时设置字符集和校对
-create table mytable(
+create table mytable1(
     column1 int,
     column2 varchar(10) character set hebrew collate hebrew_general_ci
 );
-
+select *from user;
 # 创建用户
 create user Annona_test identified by '123456';
 # 授权给用户
-GRANT select ON auto_test_database.* TO Annona;
-show grants for Annona;
+GRANT select ON auto_test_database.* TO Annona_test;
+show grants for Annona_test;
 
 # 设置可以远程连接新建的用户
-grant all privileges on *.* to 'Annona'@'%' with grant option;
+grant all privileges on *.* to 'Annona_test'@'%' with grant option;
 flush privileges;
 
 revoke select on auto_test_database.* from Annona;

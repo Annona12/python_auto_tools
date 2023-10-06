@@ -100,3 +100,57 @@ select *from customers order by cust_name collate latin1_general_cs;
 select *from user;
 # rename user Annona_test to Annona;
 show grants for Annona;
+select *from orders;
+analyze table orders ;
+check table orders,orderitems;
+show variables ;
+show status ;
+show processlist ;
+
+select *from vendors;
+select *from products;
+select prod_id,vend_id,count(*) from products group by vend_id;
+select vend_id,count(*) from products group by vend_id with rollup ;
+select *from orders;
+select *from orderitems o ;
+select cust_id,count(*) from orders group by cust_id ;
+select cust_id,count(*) from orders group by cust_id having count(*)>=2;
+select vend_id,count(*) from products where prod_price>10 group by vend_id having count(*)>= 2;
+select *
+from customers
+where cust_id in
+      (select cust_id from orders where order_num in (select order_num from orderitems where prod_id = 'TNT2'));
+
+select cust_name,cust_state, (select count(*) from orders where orders.cust_id = customers.cust_id ) as orders  from customers;
+
+
+select *
+from vendors inner join products on vendors.vend_id=products.vend_id;
+
+
+
+SELECT p1.prod_id,p1.prod_name FROM products AS p1,products AS p2 WHERE p1.vend_id = p2.vend_id AND p2.prod_id ='DTNTR';
+
+SELECT customers.cust_id,orders.order_num FROM customers left OUTER JOIN orders ON orders.cust_id = customers.cust_id;
+
+
+select customers.cust_id,customers.cust_name, count(orders.order_num)as num from customers left outer join orders on customers.cust_id=orders.cust_id group by customers.cust_id;
+
+select p.vend_id ,p.prod_id,p.prod_price from products p where p.prod_price <=5 or p.vend_id in(1001,1002);
+
+select p.vend_id ,p.prod_id,p.prod_price from products p where p.prod_price <=5 union select p.vend_id ,p.prod_id,p.prod_price from products p where p.vend_id in(1001,1002) order by prod_price;
+
+select *from productnotes;
+
+select note_id,note_text from productnotes where Match(note_text) against('rabbit');
+
+select note_id,note_text from productnotes where Match(note_text) against('anvils' with query expansion );
+
+select note_id,note_text from productnotes where Match(note_text) against('heavy -rope*' IN BOOLEAN MODE );
+select note_id,note_text from productnotes where Match(note_text) against('rabbit bait' IN BOOLEAN MODE );
+update customers set cust_email='qqwe3@funny.com',cust_name ='Lee' where cust_id=10005
+select *
+from customers;
+
+select last_insert_id();
+alter table vendors add vend_phone char(20);
