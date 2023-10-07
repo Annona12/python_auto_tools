@@ -160,9 +160,37 @@ SELECT SI.shop, COUNT(SI.item), COUNT(I.item)
 # 查询两个表中，item的内容一样的店
 SELECT shop FROM shopitems SH LEFT OUTER JOIN items I ON SH.item= I.item GROUP BY shop HAVING COUNT(SH.item) = (SELECT COUNT(*) FROM items) AND COUNT(I.item) = (SELECT COUNT(*) FROM items);
 
-SELECT *FROM courses;
+SELECT *FROM courses ;
 SELECT name,
-       CASE WHEN course='SQL 入门' THEN 'O' ELSE NULL END AS 'SQL 入门',
-       CASE WHEN course='UNIX基础' THEN 'O' ELSE NULL END AS 'UNIX基础',
-       CASE WHEN course='Java 中级' THEN 'O' ELSE NULL END AS 'Java 中级'
-FROM Courses ;
+       CASE WHEN SUM(CASE WHEN course='SQL入门' THEN 1 ELSE 0 END)=1 THEN '0' ELSE NULL END AS 'SQL入门',
+       CASE WHEN SUM(CASE WHEN course='UNIX基础' THEN 1 ELSE 0 END)=1 THEN '0' ELSE NULL END AS 'UNIX基础',
+       CASE WHEN SUM(CASE WHEN course='Java中级' THEN 1 ELSE 0 END)=1 THEN '0' ELSE NULL END AS 'Java中级'
+FROM courses GROUP BY name;
+
+SELECT name,
+       (SELECT course FROM courses C1 WHERE C1.course='SQL入门' AND C1.name=C0.name )AS 'SQL入门',
+       (SELECT course FROM courses C2 WHERE C2.course='UNIX基础' AND C2.name=C0.name )AS 'UNIX基础',
+       (SELECT course FROM courses C3 WHERE C3.course='Java中级' AND C3.name=C0.name )AS 'Java中级'
+FROM (SELECT DISTINCT name FROM courses) C0;
+
+SELECT employee,child_1 AS child  FROM Personnel
+UNION ALL
+SELECT employee,child_2 AS child  FROM Personnel
+UNION ALL
+SELECT employee,child_3 AS child  FROM Personnel
+;
+/*输出家庭关系，但是不要有重复的内容*/
+CREATE VIEW children(child)
+AS
+SELECT child_1 FROM personnel
+UNION
+SELECT child_2 FROM personnel
+UNION
+SELECT child_3 FROM personnel;
+
+SELECT employee, children.child FROM personnel P1 LEFT OUTER JOIN children ON children.child IN(P1.child_3,P1.child_2,P1.child_1);
+
+SELECT EMP.employee, CHILDREN.child
+ FROM Personnel EMP
+ LEFT OUTER JOIN Children
+ ON CHILDREN.child IN (EMP.child_1, EMP.child_2, EMP.child_3);
