@@ -124,4 +124,45 @@ SELECT *
  FROM Class_B
  WHERE city = '东京' );
 
-SELECT income,COUNT(*) FROM Graduates GROUP BY income;
+SELECT *FROM graduates;
+SELECT income,COUNT(*) FROM graduates GROUP BY income;
+
+# 求众数
+SELECT income,COUNT(*) AS cnt FROM graduates GROUP BY income
+    HAVING COUNT(*) >= ALL(SELECT COUNT(*) FROM graduates GROUP BY income);
+# 使用极值函数代替谓词
+SELECT income,COUNT(*) AS cnt FROM graduates GROUP BY income HAVING COUNT(*) >= (SELECT MAX(cnt) from (SELECT COUNT(*) AS cnt FROM graduates GROUP BY income) tmp);
+
+# 用 HAVING 子句进行自连接 ：求中位数
+# 没有理解这个语句是怎么实现获取中位数的？？？？？
+SELECT AVG(DISTINCT income) AS CENTER_INCOME FROM (SELECT T1.income FROM graduates T1,graduates T2 GROUP BY T1.income HAVING SUM(CASE WHEN T1.income>=T2.income THEN 1 ELSE 0 END)>=COUNT(*)/2 AND SUM(CASE WHEN T1.income<=T2.income THEN 1 ELSE 0 END)>=COUNT(*)/2) TMP;
+
+# 查询全部提交作业的学院，使用COUNT
+SELECT dpt FROM Students GROUP BY dpt HAVING COUNT(*)=COUNT(sbmt_date);
+# 使用CASE语句
+SELECT dpt FROM Students GROUP BY dpt HAVING COUNT(*)=SUM(CASE WHEN sbmt_date IS NOT NULL THEN 1 ELSE 0 END);
+
+# 查询的是囊括了表 Items 中所有商品的店铺
+SELECT *FROM items;
+SELECT *FROM shopitems;
+# 为什么T1不能直接使用count:受到连接操作的影响，COUNT(I.item) 的值和表 Items 原本的行数不一样了
+SELECT T2.shop
+    FROM items T1 ,shopitems T2
+    WHERE T1.item=T2.item
+    GROUP BY shop HAVING count(T2.item) = (SELECT COUNT(*) FROM items);
+
+-- COUNT(I.item) 的值已经不一定是 3 了
+SELECT SI.shop, COUNT(SI.item), COUNT(I.item)
+ FROM ShopItems SI, Items I
+ WHERE SI.item = I.item
+ GROUP BY SI.shop;
+
+# 查询两个表中，item的内容一样的店
+SELECT shop FROM shopitems SH LEFT OUTER JOIN items I ON SH.item= I.item GROUP BY shop HAVING COUNT(SH.item) = (SELECT COUNT(*) FROM items) AND COUNT(I.item) = (SELECT COUNT(*) FROM items);
+
+SELECT *FROM courses;
+SELECT name,
+       CASE WHEN course='SQL 入门' THEN 'O' ELSE NULL END AS 'SQL 入门',
+       CASE WHEN course='UNIX基础' THEN 'O' ELSE NULL END AS 'UNIX基础',
+       CASE WHEN course='Java 中级' THEN 'O' ELSE NULL END AS 'Java 中级'
+FROM Courses ;

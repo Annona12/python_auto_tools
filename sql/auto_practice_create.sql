@@ -30,3 +30,16 @@ INSERT INTO DistrictProducts VALUES('关东', '葡萄',	70);
 INSERT INTO DistrictProducts VALUES('关西', '柠檬',	70);
 INSERT INTO DistrictProducts VALUES('关西', '西瓜',	30);
 INSERT INTO DistrictProducts VALUES('关西', '苹果',	20);
+
+/* 寻找缺失的编号 */
+CREATE TABLE IF NOT EXISTS SeqTbl(
+    seq  INTEGER PRIMARY KEY,
+    name VARCHAR(16) NOT NULL
+)ENGINE=InnoDB COMMENT='寻找缺失的编号表';
+
+INSERT INTO SeqTbl VALUES(1,	'迪克');
+INSERT INTO SeqTbl VALUES(2,	'安');
+INSERT INTO SeqTbl VALUES(3,	'莱露');
+INSERT INTO SeqTbl VALUES(5,	'卡');
+INSERT INTO SeqTbl VALUES(6,	'玛丽');
+INSERT INTO SeqTbl VALUES(8,	'本');

@@ -50,3 +50,24 @@ UPDATE districtproducts P1 SET ranking =(
 
 SELECT P1.district, P1.name, P1.price, (SELECT COUNT( DISTINCT P2.price) FROM districtproducts P2 WHERE P1.price<P2.price)+1 AS rank_1 FROM districtproducts P1;
 
+/*在“寻找缺失的编号”部分，我们写了一条 SQL 语句，让程序只在
+存在缺失的编号时返回结果。请将 SQL 语句修改成始终返回一行结果，
+即存在缺失的编号时返回“存在缺失的编号”，不存在缺失的编号时返回“不
+存在缺失的编号”。*/
+SELECT CASE WHEN COUNT((seq+1) NOT IN (SELECT seq FROM seqtbl))>0 THEN '存在缺失的编号' ELSE '不存在缺失的编号' END AS '寻找缺失的编号'  FROM seqtbl  ;
+
+/*
+ 使用正文中的表 Students，全体学生都在 9 月份提交了报告的学院
+ */
+ SELECT * FROM students;
+# 这个语句肯定是不准确的
+SELECT dpt,sbmt_date FROM students  GROUP BY dpt HAVING COUNT(*)=COUNT(sbmt_date) AND MONTH(sbmt_date)=9;
+SELECT dpt FROM Students GROUP BY dpt
+HAVING COUNT(*) = SUM(CASE WHEN sbmt_date BETWEEN '2005-09-01' AND '2005-09-30'
+                           THEN 1 ELSE 0 END);
+
+SELECT *FROM items;
+SELECT *FROM shopitems;
+/*my_item_cnt 是店铺的现有库存商品种类数，diff_
+cnt 是不足的商品种类数*/
+SELECT shop,(COUNT(I.item)) AS my_item_cnt,((SELECT COUNT(*) FROM items)-COUNT(I.item)) AS diff_cnt FROM items I,shopitems SH  WHERE I.item = SH.item GROUP BY shop ;

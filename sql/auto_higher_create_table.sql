@@ -189,3 +189,59 @@ INSERT INTO Graduates VALUES('哈德逊',   15000);
 INSERT INTO Graduates VALUES('肯特',     10000);
 INSERT INTO Graduates VALUES('贝克',   10000);
 INSERT INTO Graduates VALUES('斯科特',   10000);
+
+/* 查询不包含NULL的集合 */
+CREATE TABLE  IF NOT EXISTS Students(
+    student_id   INTEGER PRIMARY KEY,
+    dpt          VARCHAR(16) NOT NULL,
+    sbmt_date    DATE
+)ENGINE=InnoDB,COMMENT '学生提交作业表';
+
+INSERT INTO Students VALUES(100,  '理学院',   '2005-10-10');
+INSERT INTO Students VALUES(101,  '理学院',   '2005-09-22');
+INSERT INTO Students VALUES(102,  '文学院',   NULL);
+INSERT INTO Students VALUES(103,  '文学院',   '2005-09-10');
+INSERT INTO Students VALUES(200,  '文学院',   '2005-09-22');
+INSERT INTO Students VALUES(201,  '工学院',   NULL);
+INSERT INTO Students VALUES(202,  '经济学院', '2005-09-25');
+
+/* 用关系除法运算进行购物篮分析 */
+CREATE TABLE Items(
+    item VARCHAR(16) PRIMARY KEY
+)ENGINE=InnoDB,COMMENT '商品表';
+
+CREATE TABLE ShopItems(
+    shop VARCHAR(16),
+    item VARCHAR(16),
+    PRIMARY KEY(shop, item)
+)ENGINE=InnoDB,COMMENT '商品列表';
+
+INSERT INTO Items VALUES('啤酒');
+INSERT INTO Items VALUES('纸尿裤');
+INSERT INTO Items VALUES('自行车');
+
+INSERT INTO ShopItems VALUES('仙台',  '啤酒');
+INSERT INTO ShopItems VALUES('仙台',  '纸尿裤');
+INSERT INTO ShopItems VALUES('仙台',  '自行车');
+INSERT INTO ShopItems VALUES('仙台',  '窗帘');
+INSERT INTO ShopItems VALUES('东京',  '啤酒');
+INSERT INTO ShopItems VALUES('东京',  '纸尿裤');
+INSERT INTO ShopItems VALUES('东京',  '自行车');
+INSERT INTO ShopItems VALUES('大阪',  '电视');
+INSERT INTO ShopItems VALUES('大阪',  '纸尿裤');
+INSERT INTO ShopItems VALUES('大阪',  '自行车');
+
+/* 用外连接进行行列转换（1）（行→列）：制作交叉表 */
+CREATE TABLE IF NOT EXISTS Courses(
+    name   VARCHAR(32),
+    course VARCHAR(32),
+    PRIMARY KEY(name, course)
+)ENGINE=InnoDB,COMMENT '学生课程表';
+
+INSERT INTO Courses VALUES('赤井', 'SQL入门');
+INSERT INTO Courses VALUES('赤井', 'UNIX基础');
+INSERT INTO Courses VALUES('铃木', 'SQL入门');
+INSERT INTO Courses VALUES('工藤', 'SQL入门');
+INSERT INTO Courses VALUES('工藤', 'Java中级');
+INSERT INTO Courses VALUES('吉田', 'UNIX基础');
+INSERT INTO Courses VALUES('渡边', 'SQL入门');
