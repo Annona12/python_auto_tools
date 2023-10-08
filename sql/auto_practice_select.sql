@@ -71,3 +71,9 @@ SELECT *FROM shopitems;
 /*my_item_cnt 是店铺的现有库存商品种类数，diff_
 cnt 是不足的商品种类数*/
 SELECT shop,(COUNT(I.item)) AS my_item_cnt,((SELECT COUNT(*) FROM items)-COUNT(I.item)) AS diff_cnt FROM items I,shopitems SH  WHERE I.item = SH.item GROUP BY shop ;
+
+/*抚养的孩子的人数*/
+SELECT *FROM Personnel;
+SELECT employee, children.child FROM personnel P1 LEFT OUTER JOIN children ON children.child IN(P1.child_3,P1.child_2,P1.child_1);
+
+SELECT employee,COUNT(child) AS child_cnt FROM personnel P1 LEFT OUTER JOIN children ON children.child IN(P1.child_3,P1.child_2,P1.child_1) GROUP BY employee;

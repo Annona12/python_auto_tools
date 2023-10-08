@@ -259,3 +259,89 @@ INSERT INTO Personnel VALUES('赤井', '一郎', '二郎', '三郎');
 INSERT INTO Personnel VALUES('工藤', '春子', '夏子', NULL);
 INSERT INTO Personnel VALUES('铃木', '夏子', NULL,   NULL);
 INSERT INTO Personnel VALUES('吉田', NULL,   NULL,   NULL);
+
+/* 在交叉表里制作嵌套式表侧栏 */
+CREATE TABLE IF NOT EXISTS TblSex(
+    sex_cd   char(1),
+    sex varchar(5),
+    PRIMARY KEY(sex_cd)
+)ENGINE=InnoDB;
+
+CREATE TABLE  IF NOT EXISTS TblAge(
+    age_class char(1),
+    age_range varchar(30),
+    PRIMARY KEY(age_class)
+)ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS TblPop(
+    pref_name  varchar(30),
+    age_class  char(1),
+    sex_cd     char(1),
+    population integer,
+    PRIMARY KEY(pref_name, age_class,sex_cd)
+)ENGINE=InnoDB;
+
+INSERT INTO TblSex (sex_cd, sex ) VALUES('m',	'男');
+INSERT INTO TblSex (sex_cd, sex ) VALUES('f',	'女');
+
+INSERT INTO TblAge (age_class, age_range ) VALUES('1',	'21岁～30岁');
+INSERT INTO TblAge (age_class, age_range ) VALUES('2',	'31岁～40岁');
+INSERT INTO TblAge (age_class, age_range ) VALUES('3',	'41岁～50岁');
+
+INSERT INTO TblPop VALUES('秋田', '1', 'm', 400 );
+INSERT INTO TblPop VALUES('秋田', '3', 'm', 1000 );
+INSERT INTO TblPop VALUES('秋田', '1', 'f', 800 );
+INSERT INTO TblPop VALUES('秋田', '3', 'f', 1000 );
+INSERT INTO TblPop VALUES('青森', '1', 'm', 700 );
+INSERT INTO TblPop VALUES('青森', '1', 'f', 500 );
+INSERT INTO TblPop VALUES('青森', '3', 'f', 800 );
+INSERT INTO TblPop VALUES('东京', '1', 'm', 900 );
+INSERT INTO TblPop VALUES('东京', '1', 'f', 1500 );
+INSERT INTO TblPop VALUES('东京', '3', 'f', 1200 );
+INSERT INTO TblPop VALUES('千叶', '1', 'm', 900 );
+INSERT INTO TblPop VALUES('千叶', '1', 'f', 1000 );
+INSERT INTO TblPop VALUES('千叶', '3', 'f', 900 );
+
+
+/* 作为乘法运算的连接 */
+CREATE TABLE IF NOT EXISTS Items1(
+    item_no INTEGER PRIMARY KEY,
+    item    VARCHAR(32) NOT NULL
+)ENGINE=InnoDB;
+
+INSERT INTO Items1 VALUES(10, 'FD');
+INSERT INTO Items1 VALUES(20, 'CD-R');
+INSERT INTO Items1 VALUES(30, 'MO');
+INSERT INTO Items1 VALUES(40, 'DVD');
+
+CREATE TABLE IF NOT EXISTS SalesHistory(
+    sale_date DATE NOT NULL,
+    item_no   INTEGER NOT NULL,
+    quantity  INTEGER NOT NULL,
+    PRIMARY KEY(sale_date, item_no)
+)ENGINE=InnoDB;
+
+INSERT INTO SalesHistory VALUES('2007-10-01',  10,  4);
+INSERT INTO SalesHistory VALUES('2007-10-01',  20, 10);
+INSERT INTO SalesHistory VALUES('2007-10-01',  30,  3);
+INSERT INTO SalesHistory VALUES('2007-10-03',  10, 32);
+INSERT INTO SalesHistory VALUES('2007-10-03',  30, 12);
+INSERT INTO SalesHistory VALUES('2007-10-04',  20, 22);
+INSERT INTO SalesHistory VALUES('2007-10-04',  30,  7);
+
+/*增长、减少、维持现状
+ */
+CREATE TABLE  IF NOT EXISTS Sales(
+    year INTEGER NOT NULL ,
+    sale INTEGER NOT NULL ,
+    PRIMARY KEY (year)
+)ENGINE=InnoDB;
+
+INSERT INTO Sales VALUES (1990, 50);
+INSERT INTO Sales VALUES (1991, 51);
+INSERT INTO Sales VALUES (1992, 52);
+INSERT INTO Sales VALUES (1993, 52);
+INSERT INTO Sales VALUES (1994, 50);
+INSERT INTO Sales VALUES (1995, 50);
+INSERT INTO Sales VALUES (1996, 49);
+INSERT INTO Sales VALUES (1997, 55);

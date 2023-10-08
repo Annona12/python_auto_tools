@@ -190,7 +190,59 @@ SELECT child_3 FROM personnel;
 
 SELECT employee, children.child FROM personnel P1 LEFT OUTER JOIN children ON children.child IN(P1.child_3,P1.child_2,P1.child_1);
 
+
 SELECT EMP.employee, CHILDREN.child
  FROM Personnel EMP
  LEFT OUTER JOIN Children
  ON CHILDREN.child IN (EMP.child_1, EMP.child_2, EMP.child_3);
+
+SELECT *FROM tblage;
+SELECT  *FROM tblpop P1 ;
+
+# SELECT  P1.age_class,'性别','东北','关东' FROM tblpop P1 UNION ALL  SELECT ;
+
+SELECT *FROM tblsex;
+
+-- 使用外连接生成嵌套式表侧栏 ：正确的 SQL 语句
+(SELECT  O1.age_class, O1.age_range,s1.sex,S1.sex_cd FROM (SELECT A1.age_class,age_range FROM tblage A1 LEFT OUTER JOIN tblpop P1 ON A1.age_class=P1.age_class GROUP BY age_range) O1 JOIN tblsex S1);
+SELECT age_class,sex_cd,SUM(CASE WHEN pref_name IN('青森','秋田') THEN population ELSE NULL END ) AS '东北',SUM(CASE WHEN pref_name IN('千叶','东京') THEN population ELSE NULL END ) AS '关东' FROM tblpop GROUP BY age_class,sex_cd;
+
+SELECT K1.age_range,K1.sex,Z1.东北,Z1.关东 FROM ((SELECT  O1.age_class, O1.age_range,s1.sex,S1.sex_cd FROM (SELECT A1.age_class,age_range FROM tblage A1 LEFT OUTER JOIN tblpop P1 ON A1.age_class=P1.age_class GROUP BY age_range) O1 JOIN tblsex S1)) K1 LEFT JOIN (SELECT age_class,sex_cd,SUM(CASE WHEN pref_name IN('青森','秋田') THEN population ELSE NULL END ) AS '东北',SUM(CASE WHEN pref_name IN('千叶','东京') THEN population ELSE NULL END ) AS '关东' FROM tblpop GROUP BY age_class,sex_cd) Z1 ON K1.age_class=Z1.age_class AND K1.sex_cd=Z1.sex_cd;
+
+SELECT *FROM items1;
+SELECT I1.item_no,SUM(quantity) FROM items1 I1 LEFT OUTER JOIN SalesHistory S1 ON S1.item_no=I1.item_no GROUP BY item_no;
+
+SELECT year,SALE FROM Sales S1 WHERE sale=(SELECT sale FROM sales S2 WHERE S1.year=S2.year-1);
+
+SELECT year,sale,CASE
+    WHEN sale=(SELECT sale FROM Sales S2 WHERE S2.year = S1.year - 1) THEN  '→'
+    WHEN sale>(SELECT sale FROM Sales S2 WHERE S2.year = S1.year - 1) THEN  '↑'
+    WHEN sale<(SELECT sale FROM Sales S2 WHERE S2.year = S1.year - 1) THEN  '↓'
+    ELSE  '—' END
+     AS var FROM Sales  S1 ORDER BY year;
+
+
+
+SELECT year,sale,CASE
+    WHEN sale=(SELECT sale FROM Sales S2 WHERE S2.year = S1.year - 1) THEN  '→'
+    WHEN sale>(SELECT sale FROM Sales S2 WHERE S2.year = S1.year - 1) THEN  '↑'
+    WHEN sale<(SELECT sale FROM Sales S2 WHERE S2.year = S1.year - 1) THEN  '↓'
+    ELSE  '—' END
+     AS var FROM Sales  S1 ORDER BY year;
+/*还有一点问题没有解决*/
+SELECT  '年份',CASE WHEN year='1990' THEN var END AS '1990',
+       CASE WHEN year='1991' THEN var END AS '1991',
+       CASE WHEN year='1992' THEN var END AS '1992',
+       CASE WHEN year='1993' THEN var END AS '1993',
+       CASE WHEN year='1994' THEN var END AS '1994'
+       FROM Sales;
+SELECT *FROM salesview ;
+CREATE VIEW salesview
+AS
+    SELECT  year,CASE
+    WHEN sale=(SELECT sale FROM Sales S2 WHERE S2.year = S1.year - 1) THEN  '→'
+    WHEN sale>(SELECT sale FROM Sales S2 WHERE S2.year = S1.year - 1) THEN  '↑'
+    WHEN sale<(SELECT sale FROM Sales S2 WHERE S2.year = S1.year - 1) THEN  '↓'
+    ELSE  '—' END
+     AS var FROM Sales  S1 ORDER BY year;
+
