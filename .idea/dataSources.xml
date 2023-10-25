@@ -23,5 +23,12 @@
       <jdbc-url>jdbc:mysql://172.20.13.185:3306/sedi</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
+    <data-source source="LOCAL" name="191.168.0.212_sqlserver" uuid="e21c74bc-c6a7-40cd-83b5-90282803b674">
+      <driver-ref>sqlserver.jtds</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>net.sourceforge.jtds.jdbc.Driver</jdbc-driver>
+      <jdbc-url>jdbc:jtds:sqlserver://191.168.0.212:1433/EzStep</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
   </component>
 </project>
